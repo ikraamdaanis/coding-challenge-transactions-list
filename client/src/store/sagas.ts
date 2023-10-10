@@ -1,17 +1,18 @@
-import { takeEvery } from 'redux-saga/effects';
 import {
-  JsonRpcProvider,
-  Transaction,
-  TransactionResponse,
-  TransactionReceipt,
   BrowserProvider,
+  JsonRpcProvider,
   Signer,
+  Transaction,
+  TransactionReceipt,
+  TransactionResponse,
   ethers,
 } from 'ethers';
+import { put, takeEvery } from 'redux-saga/effects';
 
 import apolloClient from '../apollo/client';
-import { Actions } from '../types';
+import { navigate } from '../components/NaiveRouter';
 import { SaveTransaction } from '../queries';
+import { Actions } from '../types';
 
 function* sendTransaction() {
   const provider = new JsonRpcProvider('http://localhost:8545');
@@ -34,7 +35,7 @@ function* sendTransaction() {
 
   const transaction = {
     to: randomAddress(),
-    value: ethers.parseEther('2'), // This needs to be a bigint type, not number (TASK 3)
+    value: ethers.parseEther('2'), // This needs to be a bigint type, not number (TASK #3)
   };
 
   try {
@@ -60,6 +61,11 @@ function* sendTransaction() {
       mutation: SaveTransaction,
       variables,
     });
+
+    yield put({ type: Actions.SendTransactionSucceeded, payload: variables.transaction });
+
+    // Navigating to the new transaction's individual page (TASK #4)
+    navigate(`/transaction/${receipt.hash}`);
   } catch (error) {
     console.error(Actions.SendTransaction, error);
   }
