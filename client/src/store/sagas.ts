@@ -1,5 +1,13 @@
 import { takeEvery } from 'redux-saga/effects';
-import { JsonRpcProvider, Transaction, TransactionResponse, TransactionReceipt, BrowserProvider, Signer } from 'ethers';
+import {
+  JsonRpcProvider,
+  Transaction,
+  TransactionResponse,
+  TransactionReceipt,
+  BrowserProvider,
+  Signer,
+  ethers,
+} from 'ethers';
 
 import apolloClient from '../apollo/client';
 import { Actions } from '../types';
@@ -9,7 +17,7 @@ function* sendTransaction() {
   const provider = new JsonRpcProvider('http://localhost:8545');
 
   // this could have been passed along in a more elegant fashion,
-  // but for the purpouses of this scenario it's good enough
+  // but for the purposes of this scenario it's good enough
   // @ts-ignore
   const walletProvider = new BrowserProvider(window.web3.currentProvider);
 
@@ -26,7 +34,7 @@ function* sendTransaction() {
 
   const transaction = {
     to: randomAddress(),
-    value: 1000000000000000000,
+    value: ethers.parseEther('2'), // This needs to be a bigint type, not number (TASK 3)
   };
 
   try {
@@ -38,25 +46,23 @@ function* sendTransaction() {
     const variables = {
       transaction: {
         gasLimit: (receipt.gasLimit && receipt.gasLimit.toString()) || '0',
-        gasPrice: (receipt.gasPrice && receipt.gasPrice.toString())|| '0',
+        gasPrice: (receipt.gasPrice && receipt.gasPrice.toString()) || '0',
         to: receipt.to,
         from: receipt.from,
         value: (receipt.value && receipt.value.toString()) || '',
         data: receipt.data || null,
         chainId: (receipt.chainId && receipt.chainId.toString()) || '123456',
         hash: receipt.hash,
-      }
+      },
     };
 
     yield apolloClient.mutate({
       mutation: SaveTransaction,
       variables,
     });
-
   } catch (error) {
-    //
+    console.error(Actions.SendTransaction, error);
   }
-
 }
 
 export function* rootSaga() {
