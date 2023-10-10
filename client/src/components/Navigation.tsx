@@ -1,7 +1,7 @@
-import Onboard, { WalletState } from "@web3-onboard/core";
-import injectedModule from "@web3-onboard/injected-wallets";
-import { useState } from "react";
-import SendTransaction from "./SendTransaction";
+import Onboard, { WalletState } from '@web3-onboard/core';
+import injectedModule from '@web3-onboard/injected-wallets';
+import { useState } from 'react';
+import SendTransaction from './SendTransaction';
 
 const injected = injectedModule();
 
@@ -11,12 +11,12 @@ const onboard = Onboard({
   wallets: [injected],
   chains: [
     {
-      id: "123456",
-      token: "ETH",
-      label: "Local Ganache",
-      rpcUrl: "http://localhost:8545"
-    }
-  ]
+      id: '123456',
+      token: 'ETH',
+      label: 'Local Ganache',
+      rpcUrl: 'http://localhost:8545',
+    },
+  ],
 });
 
 const Navigation = () => {
@@ -31,10 +31,7 @@ const Navigation = () => {
 
     const [metamaskWallet] = wallets;
 
-    if (
-      metamaskWallet?.label === "MetaMask" &&
-      metamaskWallet?.accounts?.[0]?.address
-    ) {
+    if (metamaskWallet?.label === 'MetaMask' && metamaskWallet?.accounts?.[0]?.address) {
       setWallet(metamaskWallet);
     }
   };
@@ -43,10 +40,7 @@ const Navigation = () => {
     <header className="flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-ful text-sm py-4 bg-gray-800">
       <nav className="max-w-[85rem] w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between">
         <div className="flex items-center justify-between">
-          <a
-            className="flex-none text-xl font-semibold dark:text-white"
-            href="."
-          >
+          <a className="flex-none text-xl font-semibold dark:text-white" href=".">
             Transactions List
           </a>
         </div>
