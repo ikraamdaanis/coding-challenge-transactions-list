@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 export const GetAllTransactions = gql`
   query GetAllTransactions {
@@ -11,7 +11,7 @@ export const GetAllTransactions = gql`
       data
       chainId
       hash
-      receipt
+      # receipt - this field is not valid which was causing the bug (TASK #1)
     }
   }
 `;
