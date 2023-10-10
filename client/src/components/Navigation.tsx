@@ -1,13 +1,10 @@
-import Onboard, { WalletState } from '@web3-onboard/core';
 import injectedModule from '@web3-onboard/injected-wallets';
-import { useState } from 'react';
-import SendTransaction from './SendTransaction';
+import { init, useConnectWallet } from '@web3-onboard/react';
+import { SendTransaction } from './SendTransactionModal';
 
 const injected = injectedModule();
 
-const onboard = Onboard({
-  // According to the @web3-onboard documentation the "injectedModule" needs to be in
-  // this array: https://github.com/blocknative/web3-onboard#quickstart (TASK #2)
+init({
   wallets: [injected],
   chains: [
     {
@@ -17,23 +14,35 @@ const onboard = Onboard({
       rpcUrl: 'http://localhost:8545',
     },
   ],
+  connect: {
+    autoConnectLastWallet: true,
+  },
 });
 
+/** This will be stored as a string array in local storage e.g: ["MetaMask"] */
+const WALLET_LOCAL_STORAGE_KEY = 'onboard.js:last_connected_wallet';
+
 const Navigation = () => {
-  const [wallet, setWallet] = useState<WalletState>();
+  const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
 
-  /**
-   * Handles the connection of a user's wallet using the Onboard.js library. It attempts
-   * to connect the user's wallet and sets the selected wallet if successful.
-   */
-  const handleConnect = async () => {
-    const wallets = await onboard.connectWallet();
+  // Since autoConnectLastWallet is true above, that means the last wallet
+  // connected will be saved to localhost.
+  const previousWallet = (
+    JSON.parse(localStorage.getItem(WALLET_LOCAL_STORAGE_KEY) as string) as string[]
+  )?.[0];
 
-    const [metamaskWallet] = wallets;
+  // If there is a previous wallet but no wallet locally that means it's loading, for some
+  // reason this is not picked up in the "connecting" variable from useConnectWallet().
+  const isLoading = (!wallet && previousWallet) || connecting;
 
-    if (metamaskWallet?.label === 'MetaMask' && metamaskWallet?.accounts?.[0]?.address) {
-      setWallet(metamaskWallet);
-    }
+  /** Attempts to connect the user's wallet. */
+  const handleConnect = () => {
+    connect();
+  };
+
+  /** Disconnects the user's wallet. */
+  const handleDisconnect = async () => {
+    wallet && disconnect(wallet);
   };
 
   return (
@@ -46,23 +55,14 @@ const Navigation = () => {
         </div>
         <div className="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow sm:block">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-end sm:mt-0 sm:pl-5">
-            {wallet && (
-              <>
-                <SendTransaction />
-                <p className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border-2 border-gray-200 font-semibold text-gray-200 text-sm">
-                  {wallet.accounts[0].address}
-                </p>
-              </>
-            )}
-            {!wallet && (
-              <button
-                type="button"
-                onClick={handleConnect}
-                className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border-2 border-gray-200 font-semibold text-gray-200 hover:text-white hover:bg-gray-500 hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 transition-all text-sm"
-              >
-                Connect Wallet
-              </button>
-            )}
+            {wallet && <SendTransaction />}
+            <button
+              type="button"
+              onClick={wallet ? handleDisconnect : handleConnect}
+              className="w-[160px] py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border-2 border-gray-200 font-semibold text-gray-200 hover:text-white hover:bg-gray-500 hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 transition-all text-sm"
+            >
+              {isLoading ? 'Loading' : wallet ? 'Disconnect Wallet' : 'Connect Wallet'}
+            </button>
           </div>
         </div>
       </nav>
