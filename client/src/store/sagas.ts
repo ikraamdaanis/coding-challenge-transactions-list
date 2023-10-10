@@ -66,6 +66,14 @@ function* sendTransaction() {
 
     // Navigating to the new transaction's individual page (TASK #4)
     navigate(`/transaction/${receipt.hash}`);
+
+    // Closing the Send Transaction modal (TASK #5)
+    // Normally this would be done in the component file but Redux useDispatch
+    // with Sagas don't return this function asynchronously unlike async thunks.
+    if ('HSOverlay' in window) {
+      const sendTransactionModal = document.getElementById('hs-basic-modal');
+      (window.HSOverlay as any).toggle(sendTransactionModal);
+    }
   } catch (error) {
     console.error(Actions.SendTransaction, error);
   }
