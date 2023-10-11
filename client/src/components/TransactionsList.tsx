@@ -1,8 +1,8 @@
 import { useQuery } from '@apollo/client';
 import { ethers } from 'ethers';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 import { GetAllTransactions } from '../queries';
-import { Transaction, TransactionsData } from '../types';
+import { TransactionsData } from '../types';
 import { navigate } from './NaiveRouter';
 
 /**
@@ -10,15 +10,10 @@ import { navigate } from './NaiveRouter';
  * recipient addresses, amounts in Ether (ETH) and links to an individual transaction page.
  */
 export const TransactionList = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-
-  const { loading, error, data } = useQuery<TransactionsData>(GetAllTransactions);
-
-  useEffect(() => {
-    if (data && data.getAllTransactions) {
-      setTransactions(data.getAllTransactions);
-    }
-  }, [data]);
+  const { loading, error, data } = useQuery<TransactionsData>(GetAllTransactions, {
+    // Refetching everytimes this page mounts so we have the most up-to-date data.
+    fetchPolicy: 'network-only',
+  });
 
   const handleNavigate = (hash: string) => navigate(`/transaction/${hash}`);
 
@@ -57,9 +52,9 @@ export const TransactionList = () => {
 
   return (
     <Container>
-      {!!transactions.length ? (
+      {!!data?.getAllTransactions?.length ? (
         <div className="flex flex-col gap-4">
-          {transactions.map(({ hash, to, from, value }) => {
+          {data?.getAllTransactions.map(({ hash, to, from, value }) => {
             // Converting WEI to ETH so it's readable and rounding it to 2 decimal places (TASK #7)
             const ethValue = Number(ethers.formatEther(value).toString());
 

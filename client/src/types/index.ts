@@ -18,10 +18,12 @@ export interface SingleTransactionData {
 }
 
 export type Action<P> = {
-  type: Actions,
-  payload: P,
+  type: Actions;
+  payload: P;
 };
 
 export enum Actions {
-  SendTransaction = 'SEND_TRANSACTION',
-};
+  SendTransactionRequested = 'SEND_TRANSACTION_REQUESTED',
+  SendTransactionSucceeded = 'SEND_TRANSACTION_SUCCEEDED',
+  SendTransactionFailed = 'SEND_TRANSACTION_FAILED',
+}

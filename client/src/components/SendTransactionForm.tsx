@@ -1,9 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FormProvider, useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
-import * as z from 'zod';
-import { Actions } from '../types';
 import { useConnectWallet } from '@web3-onboard/react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import * as z from 'zod';
+import { RootState } from '../store/reducers';
+import { Actions } from '../types';
+import { useEffect } from 'react';
 
 const sendTransactionSchema = z.object({
   sender: z.string().min(1, { message: 'Required' }),
@@ -37,8 +39,18 @@ export const SendTransactionForm = () => {
   });
 
   const onSubmit = (data: SendTransactionSchema) => {
-    dispatch({ type: Actions.SendTransaction, payload: data });
+    dispatch({ type: Actions.SendTransactionRequested, payload: data });
   };
+
+  const error = useSelector((state: RootState) => state.error);
+  const transactionCreated = useSelector((state: RootState) => state.transactionCreated);
+
+  // Resets the form inputs when a transaction is created.
+  useEffect(() => {
+    if (transactionCreated) {
+      form.reset();
+    }
+  }, [form, transactionCreated]);
 
   return (
     <FormProvider {...form}>
@@ -78,7 +90,15 @@ export const SendTransactionForm = () => {
           min={1}
           {...form.register('amount', { valueAsNumber: true })}
         />
-        <div className="flex justify-end items-center gap-x-2 py-3 px-4 border-t">
+        {error && (
+          <div className="bg-red-100 p-4 border border-red-600 rounded-sm mt-4">
+            <p className="line-clamp-3">
+              <b>Error: </b>
+              {error}
+            </p>
+          </div>
+        )}
+        <div className="flex justify-end items-center gap-x-2 pt-4">
           <button
             type="button"
             className="hs-dropdown-toggle py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm"

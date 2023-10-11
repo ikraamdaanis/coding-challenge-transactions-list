@@ -15,7 +15,7 @@ import { SaveTransaction } from '../queries';
 import { Actions } from '../types';
 
 type SendTransactionAction = {
-  type: Actions.SendTransaction;
+  type: Actions.SendTransactionRequested;
   payload: SendTransactionSchema;
 };
 
@@ -61,7 +61,7 @@ function* sendTransaction({ payload }: SendTransactionAction) {
     const variables = {
       transaction: {
         gasLimit: (receipt.gasLimit && receipt.gasLimit.toString()) || '0',
-        gasPrice: (receipt.gasPrice && receipt.gasPrice.toString()) || '0',
+        gasPrice: (receipt.gasPrice && receipt?.gasPrice?.toString()) || '0',
         to: receipt.to,
         from: receipt.from,
         value: (receipt.value && receipt.value.toString()) || '',
@@ -76,6 +76,7 @@ function* sendTransaction({ payload }: SendTransactionAction) {
       variables,
     });
 
+    // Adds the new transaction to the transactions list.
     yield put({ type: Actions.SendTransactionSucceeded, payload: variables.transaction });
 
     // Navigating to the new transaction's individual page (TASK #4)
@@ -89,10 +90,15 @@ function* sendTransaction({ payload }: SendTransactionAction) {
       (window.HSOverlay as any).toggle(sendTransactionModal);
     }
   } catch (error) {
-    console.error(Actions.SendTransaction, error);
+    console.error(Actions.SendTransactionFailed, error);
+
+    yield put({
+      type: Actions.SendTransactionFailed,
+      payload: (error as { message: string })?.message,
+    });
   }
 }
 
 export function* rootSaga() {
-  yield takeEvery(Actions.SendTransaction, sendTransaction);
+  yield takeEvery(Actions.SendTransactionRequested, sendTransaction);
 }
