@@ -1,9 +1,6 @@
-import React from 'react';
-
-import NaiveRouter from './components/NaiveRouter';
-import Navigation from './components/Navigation';
-
 import './App.css';
+import NaiveRouter from './components/NaiveRouter';
+import { Navigation } from './components/Navigation';
 
 function App() {
   return (
