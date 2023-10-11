@@ -8,13 +8,25 @@ import {
   ethers,
 } from 'ethers';
 import { put, takeEvery } from 'redux-saga/effects';
-
 import apolloClient from '../apollo/client';
 import { navigate } from '../components/NaiveRouter';
+import { SendTransactionSchema } from '../components/SendTransactionForm';
 import { SaveTransaction } from '../queries';
 import { Actions } from '../types';
 
-function* sendTransaction() {
+type SendTransactionAction = {
+  type: Actions.SendTransaction;
+  payload: SendTransactionSchema;
+};
+
+/**
+ * Handles the process of sending an Ethereum transaction. It retrieves the necessary data,
+ * such as the recipient's address and the transaction amount, and sends the transaction
+ * using the provided wallet. It also performs error handling and dispatches actions to
+ * update the application state.
+ * @param {SendTransactionAction} action - The action containing the transaction payload.
+ */
+function* sendTransaction({ payload }: SendTransactionAction) {
   const provider = new JsonRpcProvider('http://localhost:8545');
 
   // this could have been passed along in a more elegant fashion,
@@ -33,10 +45,12 @@ function* sendTransaction() {
     return accounts[random].address;
   };
 
-  const transaction = {
-    to: randomAddress(),
-    value: ethers.parseEther('2'), // This needs to be a bigint type, not number (TASK #3)
-  };
+  const recipient = payload.recipient || randomAddress();
+
+  // This needs to be a bigint type, not number (TASK #3)
+  const amount = ethers.parseEther(String(payload.amount));
+
+  const transaction = { to: recipient, value: amount };
 
   try {
     const txResponse: TransactionResponse = yield signer.sendTransaction(transaction);

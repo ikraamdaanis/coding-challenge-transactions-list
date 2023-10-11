@@ -7,7 +7,7 @@ import { useConnectWallet } from '@web3-onboard/react';
 
 const sendTransactionSchema = z.object({
   sender: z.string().min(1, { message: 'Required' }),
-  recipient: z.string().min(1, { message: 'Required' }),
+  recipient: z.string(),
   amount: z.number().min(1),
 });
 
@@ -21,25 +21,23 @@ export const SendTransactionForm = () => {
   const dispatch = useDispatch();
 
   const [{ wallet }] = useConnectWallet();
+
   const form = useForm({
     resolver: zodResolver(sendTransactionSchema),
     defaultValues: {
-      sender: '',
+      sender: wallet?.accounts?.[0].address || '',
       recipient: '',
       amount: 1,
     },
     values: {
       sender: wallet?.accounts?.[0].address || '',
-      recipient: 'b',
+      recipient: '',
       amount: 1,
     },
   });
 
   const onSubmit = (data: SendTransactionSchema) => {
-    console.log('DATA: ', data);
-    dispatch({
-      type: Actions.SendTransaction,
-    });
+    dispatch({ type: Actions.SendTransaction, payload: data });
   };
 
   return (
@@ -47,7 +45,7 @@ export const SendTransactionForm = () => {
       <form className="p-4 overflow-y-auto" onSubmit={form.handleSubmit(onSubmit)}>
         <p className="mt-1 mb-6 text-gray-800">Send ETH to a wallet address</p>
         <label htmlFor="input-sender" className="block text-sm font-bold my-2">
-          Sender:
+          Sender (Autocompleted):
         </label>
         <input
           type="text"
@@ -65,16 +63,18 @@ export const SendTransactionForm = () => {
           id="input-recipient"
           className="opacity-70 py-3 px-4 block bg-gray-50 border-gray-800 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 w-full"
           placeholder="Recipient Address"
+          required
           {...form.register('recipient')}
         />
         <label htmlFor="input-amount" className="block text-sm font-bold my-2">
-          Amount:
+          Amount (ETH):
         </label>
         <input
           type="number"
           id="input-amount"
           className="opacity-70 py-3 px-4 block bg-gray-50 border-gray-800 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 w-full"
           placeholder="Amount"
+          min={1}
           {...form.register('amount', { valueAsNumber: true })}
         />
         <div className="flex justify-end items-center gap-x-2 py-3 px-4 border-t">
