@@ -1,8 +1,7 @@
-import './App.css';
 import NaiveRouter from './components/NaiveRouter';
 import { Navigation } from './components/Navigation';
 
-function App() {
+export function App() {
   return (
     <div>
       <Navigation />
@@ -10,5 +9,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
