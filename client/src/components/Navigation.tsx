@@ -3,6 +3,7 @@ import { init, useConnectWallet } from '@web3-onboard/react';
 import { useState } from 'react';
 import { Close } from './Close';
 import { Hamburger } from './Hamburger';
+import { navigate } from './NaiveRouter';
 import { SendTransaction } from './SendTransactionModal';
 
 init({
@@ -59,9 +60,13 @@ export const Navigation = () => {
     <header className="flex bg-gray-800 fixed w-full h-20 top-0">
       <nav className="max-w-[85rem] w-full mx-auto flex items-center justify-between gap-2 p-4">
         <div className="flex items-center justify-between">
-          <a className="flex-none text-xl font-semibold dark:text-white" href=".">
+          {/** Fixed this link as it went to an empty page if you pressed it from the Single Transaction page. */}
+          <button
+            className="flex-none text-xl font-semibold dark:text-white"
+            onClick={() => navigate('/')}
+          >
             Transactions List
-          </a>
+          </button>
         </div>
         <div>
           <div className="sm:hidden" onClick={() => setMenuOpen(prev => !prev)}>

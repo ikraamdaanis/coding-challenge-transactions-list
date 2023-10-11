@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import TransactionList from './TransactionsList';
-import SingleTransaction from './SingleTransaction';
+import { SingleTransaction } from './SingleTransaction';
+import { TransactionList } from './TransactionsList';
 
 interface RouteParams {
   [key: string]: string;
