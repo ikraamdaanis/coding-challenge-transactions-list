@@ -21,7 +21,7 @@ const TransactionList: React.FC = () => {
   if (loading) {
     return (
       <div className="flex flex-col mt-20">
-        <div className="max-w-[85rem] w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between">
+        <div className="max-w-[85rem] w-full mx-auto p-4 sm:flex sm:items-center sm:justify-between">
           Loading...
         </div>
       </div>
@@ -31,7 +31,7 @@ const TransactionList: React.FC = () => {
   if (error) {
     return (
       <div className="flex flex-col mt-20">
-        <div className="max-w-[85rem] w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between text-red-600 font-bold">
+        <div className="max-w-[85rem] w-full mx-auto p-4 sm:flex sm:items-center sm:justify-between text-red-600 font-bold">
           Error: {error.message}
         </div>
       </div>
@@ -40,8 +40,8 @@ const TransactionList: React.FC = () => {
 
   return (
     <div className="flex flex-col mt-20">
-      <div className="max-w-[85rem] w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between">
-        <div className="p-1.5 min-w-full inline-block align-middle">
+      <div className="max-w-[85rem] w-full mx-auto p-4 sm:flex sm:items-center sm:justify-between">
+        <div className="p-1.5 w-full inline-block align-middle">
           {!!transactions.length ? (
             <>
               {transactions.map(({ hash, to, from, value }) => {
@@ -51,13 +51,15 @@ const TransactionList: React.FC = () => {
                 return (
                   <div
                     key={hash}
-                    className="bg-white shadow-sm p-4 md:p-5 border rounded border-gray-300 mt-3 hover:border-blue-500 cursor-pointer"
+                    className="bg-white shadow-sm p-4 md:p-5 border rounded border-gray-300 mt-3 hover:border-blue-500 cursor-pointer w-full break-words overflow-hidden text-ellipsis"
                     onClick={() => handleNavigate(hash)}
                     title={`${ethValue} ETH`}
                   >
-                    <span className="font-bold">{ethValue.toFixed(2)} ETH</span> sent from{' '}
-                    <span className="font-bold">{from}</span> to{' '}
-                    <span className="font-bold">{to}</span>
+                    <span className="font-bold break-words text-blue-600">
+                      {ethValue.toFixed(2)} ETH
+                    </span>{' '}
+                    sent from <span className="font-bold break-words">{from}</span> to{' '}
+                    <span className="font-bold break-words">{to}</span>
                   </div>
                 );
               })}
