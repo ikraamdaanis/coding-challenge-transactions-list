@@ -8,9 +8,9 @@ import { Actions } from '../types';
 import { useEffect } from 'react';
 
 const sendTransactionSchema = z.object({
-  sender: z.string().min(1, { message: 'Required' }),
-  recipient: z.string(),
-  amount: z.number().min(1),
+  sender: z.string().min(1),
+  recipient: z.string().min(1, { message: 'Please enter a valid receipt address' }),
+  amount: z.number().min(1, { message: 'Please enter a value of at least 1 ETH' }),
 });
 
 export type SendTransactionSchema = z.infer<typeof sendTransactionSchema>;
@@ -37,6 +37,8 @@ export const SendTransactionForm = () => {
       amount: 1,
     },
   });
+
+  const formErrors = form.formState.errors;
 
   const onSubmit = (data: SendTransactionSchema) => {
     dispatch({ type: Actions.SendTransactionRequested, payload: data });
@@ -75,9 +77,13 @@ export const SendTransactionForm = () => {
           id="input-recipient"
           className="opacity-70 py-3 px-4 block bg-gray-50 border-gray-800 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 w-full"
           placeholder="Recipient Address"
-          required
           {...form.register('recipient')}
         />
+        {formErrors?.['recipient'] && (
+          <p className="text-red-600 my-1 font-semibold text-sm">
+            {formErrors?.['recipient'].message}
+          </p>
+        )}
         <label htmlFor="input-amount" className="block text-sm font-bold my-2">
           Amount (ETH):
         </label>
@@ -87,9 +93,13 @@ export const SendTransactionForm = () => {
           className="opacity-70 py-3 px-4 block bg-gray-50 border-gray-800 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 w-full"
           placeholder="Amount"
           step="any"
-          min={1}
           {...form.register('amount', { valueAsNumber: true })}
         />
+        {formErrors?.['amount'] && (
+          <p className="text-red-600 my-1 font-semibold text-sm">
+            {formErrors?.['amount'].message}
+          </p>
+        )}
         {error && (
           <div className="bg-red-100 p-4 border border-red-600 rounded-sm mt-4">
             <p className="line-clamp-3">

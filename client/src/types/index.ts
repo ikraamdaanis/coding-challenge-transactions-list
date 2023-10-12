@@ -26,4 +26,5 @@ export enum Actions {
   SendTransactionRequested = 'SEND_TRANSACTION_REQUESTED',
   SendTransactionSucceeded = 'SEND_TRANSACTION_SUCCEEDED',
   SendTransactionFailed = 'SEND_TRANSACTION_FAILED',
+  SendTransactionClear = 'SEND_TRANSACTION_CLEAR',
 }
