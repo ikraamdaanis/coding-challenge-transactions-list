@@ -71,25 +71,27 @@ export const SingleTransaction = ({ id }: SingleTransactionProps) => {
     <Container>
       <div className="w-full mx-auto p-4 bg-white border-zinc-200 rounded-sm border flex flex-col gap-2">
         <p className="break-words">
-          <span className="font-semibold inline-block w-full min-w-[10rem] sm:w-[25%]">
+          <span className="font-semibold inline-block w-full min-w-[10rem] md:w-[25%]">
             Transaction Hash:{' '}
           </span>
           <span className="break-words">{hash}</span>
         </p>
         <p className="break-words">
-          <span className="font-semibold inline-block min-w-[10rem] sm:w-[25%]">
+          <span className="font-semibold inline-block w-full min-w-[10rem] md:w-[25%]">
             Sender Address:{' '}
           </span>
           <span className="text-blue-600">{from}</span>
         </p>
         <p className="break-words">
-          <span className="font-semibold inline-block min-w-[10rem] sm:w-[25%]">
+          <span className="font-semibold inline-block w-full min-w-[10rem] md:w-[25%]">
             Recipient Address:{' '}
           </span>
           <span className="text-blue-600">{to}</span>
         </p>
         <p className="break-words">
-          <span className="font-semibold inline-block min-w-[10rem] sm:w-[25%]">Amount: </span>
+          <span className="font-semibold inline-block w-full min-w-[10rem] md:w-[25%]">
+            Amount:{' '}
+          </span>
           <span>{ethValue} ETH</span>
         </p>
       </div>
